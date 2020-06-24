@@ -62,14 +62,6 @@ function timer() {
         time--;
         timeEl.textContent = "Time: " + time;
 
-        if (time === 15) {
-            timeEl.setAttribute("class", "badge badge-pill badge-warning")
-        }
-
-        if (time === 5) {
-            timeEl.setAttribute("class", "badge badge-pill badge-danger")
-        }
-
         if (time <= 0) {
             clearInterval(timerInterval);
             clear();
