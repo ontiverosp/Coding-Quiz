@@ -2,7 +2,7 @@ var view = document.querySelector(".jumbotron");
 var highScore = document.querySelector("#scores");
 var quiz = document.querySelector("#quiz");
 var rules = ["THE RULES", "1) Total time: 75 seconds", "2) Wron answer: -5 seconds", "3) Correct answer: +1 point", "4) Get the most points"];
-var time = 75;
+var time = 5;
 var questions = [
     {
         title: "Which of these is a color?",
@@ -32,6 +32,7 @@ var questions = [
 ]
 var qIndex = 0;
 var points = 0;
+var initials = document.createElement("input");
 
 
 
@@ -69,7 +70,7 @@ function timer() {
             timeEl.setAttribute("class", "badge badge-pill badge-danger")
         }
 
-        if (time === 0) {
+        if (time <= 0) {
             clearInterval(timerInterval);
             clear();
             scoreWindow();
@@ -83,24 +84,51 @@ function timer() {
 //checks answer
 function answerCheck(x) {
     var y = questions[qIndex].answer;
-    if (x === y){
+    if (x === y) {
         points = points + 1;
         console.log("correct");
     }
-    else{
+    else {
         time = time - 5;
         console.log("wrong");
     }
 }
-//keeps track of scores
-function score() {
 
-
-}
 
 //Makes score window
 function scoreWindow() {
+    var scoreReport = document.createElement("p");
+    scoreReport.textContent = "You got " + points + " points.";
+    view.appendChild(scoreReport);
 
+    if (points > localStorage.getItem("score")) {
+        var scoreSave = document.createElement("p");
+        scoreSave.textContent = "If you want to save your score, type in your name below and click save";
+        view.appendChild(scoreSave);
+
+        initials.setAttribute("type", "text");
+        initials.setAttribute("id", "name")
+        view.appendChild(initials,);
+        var saveEl = document.createElement("span");
+        saveEl.setAttribute("class", "badge badge-pill badge-secondary")
+        saveEl.setAttribute("id", "save-btn")
+        saveEl.textContent = "Save Score";
+        view.appendChild(saveEl);
+    }
+    else {
+        var message = document.createElement("p");
+        message.textContent = "Sorry, you can't save your score cause you didn't get a high score";
+        view.appendChild(message);
+
+    }
+}
+
+//save score to local storage
+function scoreSave() {
+
+    var name = initials.value;
+    localStorage.setItem("score", points);
+    localStorage.setItem("name", name);
 
 }
 
@@ -125,6 +153,10 @@ function qs() {
 
 //fills the jumbotron with the quiz start screen
 function welcome() {
+    //resets variables
+    time = 75;
+    points = 0;
+    qIndex = 0;
 
     // Creates the title.
     var title = document.createElement("h1");
@@ -176,6 +208,12 @@ view.addEventListener("click", function (event) {
         timer();
         qs();
     }
+    //click Save
+    if (event.target.matches("#save-btn")) {
+        scoreSave();
+        clear();
+        welcome();
+    }
 });
 
 //shows the leaderboard
@@ -184,7 +222,11 @@ highScore.addEventListener("click", function (event) {
     highScore.setAttribute("class", "nav-link active");
     quiz.setAttribute("class", "nav-link");
     clear();
-    //Build the leaderboard
+    var hs = document.createElement("p");
+    hs.textContent = "The high score is: " + localStorage.getItem("score") + " and it was gotten by: " + localStorage.getItem("name");
+    hs.setAttribute("style", "text-align:center;font-size: 32px");
+    view.appendChild(hs);
+
 
 });
 
